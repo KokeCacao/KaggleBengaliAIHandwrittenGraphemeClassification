@@ -17,9 +17,9 @@ from keras.callbacks import Callback, ModelCheckpoint
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold, MultilabelStratifiedShuffleSplit
 
 # Custom
-from .preprocessing import generate_images, resize_image
-from .model import create_model
-from .utils import plot_summaries
+from preprocessing import generate_images, resize_image
+from model import create_model
+from utils import plot_summaries
 
 # Seeds
 SEED = 1234
