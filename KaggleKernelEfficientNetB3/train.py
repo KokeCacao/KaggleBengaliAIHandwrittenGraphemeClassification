@@ -21,6 +21,11 @@ from preprocessing import generate_images, resize_image
 from model import create_model
 from utils import plot_summaries
 
+# should also install
+# conda install python-snappy
+# conda install -c conda-forge fastparquet
+# conda install -c conda-forge pyarrow
+
 # Seeds
 SEED = 1234
 np.random.seed(SEED)
@@ -45,6 +50,8 @@ CHANNELS = 3
 EPOCHS = 80
 TEST_SIZE = 1./6
 
+# Generate Image (Has to be done only one time .. or again when changing SCALE_FACTOR)
+GENERATE_IMAGES = False
 
 class TrainDataGenerator(keras.utils.Sequence):
     def __init__(self, X_set, Y_set, ids, batch_size=16, img_size=(512, 512, 3), img_dir=TRAIN_DIR, *args, **kwargs):
@@ -149,8 +156,6 @@ if __name__ == '__main__':
     print(HEIGHT_NEW)
     print(WIDTH_NEW)
 
-    # Generate Image (Has to be done only one time .. or again when changing SCALE_FACTOR)
-    GENERATE_IMAGES = True
     if GENERATE_IMAGES:
         generate_images(DATA_DIR, TRAIN_DIR, WIDTH, HEIGHT, WIDTH_NEW, HEIGHT_NEW)
 
@@ -168,8 +173,6 @@ if __name__ == '__main__':
     # Cleanup
     del train_df
     gc.collect()
-
-
 
     # Create Model
     model = create_model(input_shape = (HEIGHT_NEW, WIDTH_NEW, CHANNELS))
