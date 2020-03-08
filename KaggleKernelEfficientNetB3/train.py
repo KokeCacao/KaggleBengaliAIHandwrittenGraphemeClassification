@@ -16,10 +16,10 @@ from keras.callbacks import Callback, ModelCheckpoint
 # Iterative-Stratification
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold, MultilabelStratifiedShuffleSplit
 
-# Custom 
-from preprocessing import generate_images, resize_image
-from model import create_model
-from utils import plot_summaries
+# Custom
+from .preprocessing import generate_images, resize_image
+from .model import create_model
+from .utils import plot_summaries
 
 # Seeds
 SEED = 1234
@@ -27,7 +27,7 @@ np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
 # Input Dir
-DATA_DIR = 'C:/KaggleBengaliAI/bengaliai-cv19'
+DATA_DIR = ''
 TRAIN_DIR = './train/'
 
 # Constants
