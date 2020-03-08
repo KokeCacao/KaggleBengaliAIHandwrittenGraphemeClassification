@@ -27,8 +27,8 @@ np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
 # Input Dir
-DATA_DIR = ''
-TRAIN_DIR = './train/'
+DATA_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/data'
+TRAIN_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/data/train/'
 
 # Constants
 HEIGHT = 137
