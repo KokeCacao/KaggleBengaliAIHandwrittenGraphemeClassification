@@ -203,7 +203,7 @@ if __name__ == '__main__':
     history = {}
 
     ## added by Koke_Cacao
-    model.load_weights(WEIGHT_DIR + "Train1_model_68.h5")
+    model.load_weights("/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/model_weights/Train1_model_68.h5")
 
     # Epoch Training Loop
     for epoch, msss_splits in zip(range(0, EPOCHS), msss.split(X_train, Y_train)):
