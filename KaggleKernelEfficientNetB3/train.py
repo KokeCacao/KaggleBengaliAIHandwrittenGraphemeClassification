@@ -202,6 +202,9 @@ if __name__ == '__main__':
     # History Placeholder
     history = {}
 
+    ## added by Koke_Cacao
+    model.load_weights(WEIGHT_DIR + "Train_1_model_68.h5")
+
     # Epoch Training Loop
     for epoch, msss_splits in zip(range(0, EPOCHS), msss.split(X_train, Y_train)):
         print('=========== EPOCH {}'.format(epoch))
@@ -231,9 +234,6 @@ if __name__ == '__main__':
         VALID_STEPS = int(len(data_generator_val))
         print('Train Generator Size: {0}'.format(len(data_generator_train)))
         print('Validation Generator Size: {0}'.format(len(data_generator_val)))
-
-        ## added by Koke_Cacao
-        model.load_weights(WEIGHT_DIR + "Train_1_model_68.h5")
 
         model.fit_generator(generator = data_generator_train,
                             validation_data = data_generator_val,
