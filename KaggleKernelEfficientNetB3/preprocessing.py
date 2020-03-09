@@ -26,6 +26,9 @@ def resize_and_save_image(train_dir, img, org_width, org_height, new_width, new_
     cv2.imwrite(train_dir + str(image_id) + '.png', image_resized)
         
 def generate_images(data_dir, train_dir, org_width, org_height, new_width, new_height):
+    if not os.path.exists(train_dir):
+        os.makedirs(train_dir)
+
     for i in tqdm(range(0, 4)):
 
         # Read Parquet file

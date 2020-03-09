@@ -27,9 +27,9 @@ np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
 # Input Dir
-WEIGHT_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/model_weights/'
-DATA_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/data'
-TRAIN_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/data/train/'
+WEIGHT_DIR = '/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/model_weights/'
+DATA_DIR = '/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/data'
+TRAIN_DIR = '/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/data/train/'
 
 # Constants
 HEIGHT = 137
