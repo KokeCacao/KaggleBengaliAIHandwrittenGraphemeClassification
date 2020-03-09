@@ -21,17 +21,13 @@ from preprocessing import generate_images, resize_image
 from model import create_model
 from utils import plot_summaries
 
-# should also install
-# conda install python-snappy
-# conda install -c conda-forge fastparquet
-# conda install -c conda-forge pyarrow
-
 # Seeds
 SEED = 1234
 np.random.seed(SEED)
 tf.random.set_seed(SEED)
 
 # Input Dir
+WEIGHT_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/model_weights/'
 DATA_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/data'
 TRAIN_DIR = '~/KaggleBengaliAIHandwrittenGraphemeClassification/data/train/'
 
@@ -151,6 +147,11 @@ def CustomReduceLRonPlateau(model, history, epoch):
             print('ReduceLRonPlateau setting learning rate to: {0}'.format(new_lr))
             K.set_value(model.optimizer.lr, new_lr)
 
+# 2020-03-08 06:31:55.907538: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer.so.6'; dlerror: libnvinfer.so.6: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/nccl2/lib:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:/usr/local/nccl2/lib:/usr/local/cuda/extras/CUPTI/lib64
+# 2020-03-08 06:31:55.907683: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libnvinfer_plugin.so.6'; dlerror: libnvinfer_plugin.so.6: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64:/usr/local/nccl2/lib:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:/usr/local/nccl2/lib:/usr/local/cuda/extras/CUPTI/lib64
+# 2020-03-08 06:31:55.907708: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:30] Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
+# Using TensorFlow backend.
+
 if __name__ == '__main__':
     # Image Size Summary
     print(HEIGHT_NEW)
@@ -230,6 +231,9 @@ if __name__ == '__main__':
         VALID_STEPS = int(len(data_generator_val))
         print('Train Generator Size: {0}'.format(len(data_generator_train)))
         print('Validation Generator Size: {0}'.format(len(data_generator_val)))
+
+        ## added by Koke_Cacao
+        model.load_weights(WEIGHT_DIR + "Train_1_model_68.h5")
 
         model.fit_generator(generator = data_generator_train,
                             validation_data = data_generator_val,
