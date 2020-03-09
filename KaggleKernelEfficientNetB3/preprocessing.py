@@ -35,10 +35,12 @@ def generate_images(data_dir, train_dir, org_width, org_height, new_width, new_h
         # Drop Image_id column
         df = df.drop(['image_id'], axis = 1)
         
-        # Loop over rows in Dataframe and generate images 
-        for image_id, index in zip(image_ids, range(df.shape[0])):
+        # Loop over rows in Dataframe and generate images
+        pbar = tqdm(zip(image_ids, range(df.shape[0])))
+        for image_id, index in pbar:
             resize_and_save_image(train_dir,df.loc[df.index[index]].values, org_width, 
                                     org_height, new_width, new_height, image_id)
+            pbar.set_description_str("SAVE FILE: " + train_dir + str(image_id) + '.png')
        
         # Cleanup
         del df

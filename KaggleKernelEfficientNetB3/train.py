@@ -47,7 +47,7 @@ EPOCHS = 80
 TEST_SIZE = 1./6
 
 # Generate Image (Has to be done only one time .. or again when changing SCALE_FACTOR)
-GENERATE_IMAGES = False
+GENERATE_IMAGES = True
 
 class TrainDataGenerator(keras.utils.Sequence):
     def __init__(self, X_set, Y_set, ids, batch_size=16, img_size=(512, 512, 3), img_dir=TRAIN_DIR, *args, **kwargs):
