@@ -222,8 +222,8 @@ if __name__ == '__main__':
 
     AUGMENTATIONS_TRAIN = Compose([
         ShiftScaleRotate(
-            shift_limit=0.0625, scale_limit=(0.9, 1.0),
-            rotate_limit=5, interpolation=cv2.INTER_AREA, border_mode=cv2.BORDER_CONSTANT, p=0.8),
+            shift_limit=0.02, scale_limit=(0.99, 1.0),
+            rotate_limit=2, interpolation=cv2.INTER_AREA, border_mode=cv2.BORDER_CONSTANT, p=0.8),
     ])
     AUGMENTATIONS_TEST = Compose([
     ])
@@ -241,10 +241,6 @@ if __name__ == '__main__':
         np.random.shuffle(train_idx)
         print('Train Length: {0}   First 10 indices: {1}'.format(len(train_idx), train_idx[:10]))
         print('Valid Length: {0}    First 10 indices: {1}'.format(len(valid_idx), valid_idx[:10]))
-
-        # TODO: check repeat
-        print('Train Length: {0}   First sorted 10 indices: {1}'.format(len(train_idx), sorted(train_idx)[:10]))
-        print('Valid Length: {0}    First sorted 10 indices: {1}'.format(len(valid_idx), sorted(valid_idx)[:10]))
 
         # Create Data Generators for Train and Valid
         data_generator_train = TrainDataGenerator(X_train,
