@@ -54,7 +54,7 @@ TEST_SIZE = 1./6
 FOLD = 6
 
 # Generate Image (Has to be done only one time .. or again when changing SCALE_FACTOR)
-GENERATE_IMAGES = True
+GENERATE_IMAGES = False
 
 class TrainDataGenerator(keras.utils.Sequence):
     def __init__(self, X_set, Y_set, ids, batch_size, img_size, img_dir, augmentations, *args, **kwargs):
