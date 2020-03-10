@@ -231,9 +231,7 @@ if __name__ == '__main__':
     mess = list(msss.split(X_train, Y_train))[FOLD-1]
 
     # Epoch Training Loop
-    for epoch, _ in enumerate(mess):
-        train_idx = _[0]
-        valid_idx = _[1]
+    for epoch, (train_idx, valid_idx) in enumerate(zip(*mess)):
         print('=========== EPOCH {}'.format(epoch))
 
         # Get train and test index, shuffle train indexes.
