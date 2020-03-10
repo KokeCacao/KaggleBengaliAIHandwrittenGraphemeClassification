@@ -230,7 +230,8 @@ if __name__ == '__main__':
 
     mess = list(msss.split(X_train, Y_train))[FOLD-1]
     print(mess)
-    train_idx, valid_idx = zip(mess)
+    train_idx = mess[0]
+    valid_idx = mess[1]
 
     # Epoch Training Loop
     for epoch in range(EPOCHS):
