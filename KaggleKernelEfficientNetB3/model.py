@@ -18,7 +18,7 @@ def create_model(input_shape):
     input = Input(shape = input_shape)
     
     # Create and Compile Model and show Summary
-    x_model = efn.EfficientNetB3(weights = 'imagenet', include_top = False, input_tensor = input, pooling = None, 
+    x_model = efn.EfficientNetB3(weights = 'noisy-student', include_top = False, input_tensor = input, pooling = None,
                                 classes = None)
     
     # UnFreeze all layers

@@ -17,10 +17,16 @@ from keras.callbacks import Callback, ModelCheckpoint
 from iterstrat.ml_stratifiers import MultilabelStratifiedKFold, MultilabelStratifiedShuffleSplit
 
 # Custom
+from keras_preprocessing.image import ImageDataGenerator
+
 from preprocessing import generate_images, resize_image
 from model import create_model
 from utils import plot_summaries
 
+from albumentations import (
+    Compose, HorizontalFlip, HueSaturationValue,
+    RandomBrightness, RandomContrast, RandomGamma, ShiftScaleRotate,
+    RandomBrightnessContrast)
 # Seeds
 SEED = 1234
 np.random.seed(SEED)
@@ -45,12 +51,13 @@ BATCH_SIZE = 56
 CHANNELS = 3
 EPOCHS = 80
 TEST_SIZE = 1./6
+FOLD = 6
 
 # Generate Image (Has to be done only one time .. or again when changing SCALE_FACTOR)
 GENERATE_IMAGES = True
 
 class TrainDataGenerator(keras.utils.Sequence):
-    def __init__(self, X_set, Y_set, ids, batch_size=16, img_size=(512, 512, 3), img_dir=TRAIN_DIR, *args, **kwargs):
+    def __init__(self, X_set, Y_set, ids, batch_size, img_size, img_dir, augmentations, *args, **kwargs):
         self.X = X_set
         self.ids = ids
         self.Y = Y_set
@@ -68,6 +75,9 @@ class TrainDataGenerator(keras.utils.Sequence):
         self.y_vowel = self.y_indexed.iloc[:, types['grapheme_root']:types['grapheme_root'] + types['vowel_diacritic']]
         self.y_consonant = self.y_indexed.iloc[:, types['grapheme_root'] + types['vowel_diacritic']:]
 
+        # Augmentation
+        self.augment = augmentations
+
     def __len__(self):
         return int(ceil(len(self.ids) / self.batch_size))
 
@@ -80,6 +90,7 @@ class TrainDataGenerator(keras.utils.Sequence):
         self.indices = np.arange(len(self.ids))
 
     def __data_generation(self, indices):
+        # TODO: check image size
         X = np.empty((self.batch_size, *self.img_size))
         Y_root = np.empty((self.batch_size, 168), dtype=np.int16)
         Y_vowel = np.empty((self.batch_size, 11), dtype=np.int16)
@@ -89,11 +100,14 @@ class TrainDataGenerator(keras.utils.Sequence):
             ID = self.x_indexed[index]
             image = _read(self.img_dir + ID + ".png")
 
-            X[i,] = image
+            # Augmentation
+            X[i,] = self.augment(image=image)["image"]
 
             Y_root[i,] = self.y_root.iloc[index].values
             Y_vowel[i,] = self.y_vowel.iloc[index].values
             Y_consonant[i,] = self.y_consonant.iloc[index].values
+
+            # TODO: augmentation
 
         return X, Y_root, Y_vowel, Y_consonant
 
@@ -154,8 +168,8 @@ def CustomReduceLRonPlateau(model, history, epoch):
 
 if __name__ == '__main__':
     # Image Size Summary
-    print(HEIGHT_NEW)
-    print(WIDTH_NEW)
+    print("HEIGHT_NEW = {}".format(HEIGHT_NEW))
+    print("HEIGHT_NEW = {}".format(WIDTH_NEW))
 
     if GENERATE_IMAGES:
         generate_images(DATA_DIR, TRAIN_DIR, WIDTH, HEIGHT, WIDTH_NEW, HEIGHT_NEW)
@@ -183,9 +197,9 @@ if __name__ == '__main__':
                     loss = {'root': 'categorical_crossentropy',
                             'vowel': 'categorical_crossentropy',
                             'consonant': 'categorical_crossentropy'},
-                    loss_weights = {'root': 0.40,
-                                    'vowel': 0.30,
-                                    'consonant': 0.30},
+                    loss_weights = {'root': 0.50,
+                                    'vowel': 0.25,
+                                    'consonant': 0.25},
                     metrics = {'root': ['accuracy', tf.keras.metrics.Recall()],
                                 'vowel': ['accuracy', tf.keras.metrics.Recall()],
                                 'consonant': ['accuracy', tf.keras.metrics.Recall()] })
@@ -194,7 +208,7 @@ if __name__ == '__main__':
     print(model.summary())
 
     # Multi Label Stratified Split stuff...
-    msss = MultilabelStratifiedShuffleSplit(n_splits = EPOCHS, test_size = TEST_SIZE, random_state = SEED)
+    msss = MultilabelStratifiedShuffleSplit(n_splits = FOLD, test_size = TEST_SIZE, random_state = SEED)
 
     # CustomReduceLRonPlateau function
     best_val_loss = np.Inf
@@ -203,18 +217,30 @@ if __name__ == '__main__':
     history = {}
 
     ## added by Koke_Cacao
-    model.load_weights("/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/model_weights/Train1_model_68.h5")
+    # model.load_weights("/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/model_weights/Train1_model_68.h5")
+
+    AUGMENTATIONS_TRAIN = Compose([
+        ShiftScaleRotate(
+            shift_limit=0.0625, scale_limit=(0.9, 1.0),
+            rotate_limit=5, interpolation=cv2.INTER_AREA, border_mode=cv2.BORDER_CONSTANT, p=0.8),
+    ])
+    AUGMENTATIONS_TEST = Compose([
+    ])
+
+    mess = list(msss.split(X_train, Y_train))[FOLD]
 
     # Epoch Training Loop
-    for epoch, msss_splits in zip(range(0, EPOCHS), msss.split(X_train, Y_train)):
+    for epoch, train_idx, valid_idx in enumerate(zip(*mess)):
         print('=========== EPOCH {}'.format(epoch))
 
         # Get train and test index, shuffle train indexes.
-        train_idx = msss_splits[0]
-        valid_idx = msss_splits[1]
         np.random.shuffle(train_idx)
         print('Train Length: {0}   First 10 indices: {1}'.format(len(train_idx), train_idx[:10]))
         print('Valid Length: {0}    First 10 indices: {1}'.format(len(valid_idx), valid_idx[:10]))
+
+        # TODO: check repeat
+        print('Train Length: {0}   First sorted 10 indices: {1}'.format(len(train_idx), sorted(train_idx)[:10]))
+        print('Valid Length: {0}    First sorted 10 indices: {1}'.format(len(valid_idx), sorted(valid_idx)[:10]))
 
         # Create Data Generators for Train and Valid
         data_generator_train = TrainDataGenerator(X_train,
@@ -222,13 +248,15 @@ if __name__ == '__main__':
                                                 train_idx,
                                                 BATCH_SIZE,
                                                 (HEIGHT_NEW, WIDTH_NEW, CHANNELS),
-                                                img_dir = TRAIN_DIR)
+                                                img_dir = TRAIN_DIR,
+                                                augmentations=AUGMENTATIONS_TRAIN)
         data_generator_val = TrainDataGenerator(X_train,
                                                 Y_train,
                                                 valid_idx,
                                                 BATCH_SIZE,
                                                 (HEIGHT_NEW, WIDTH_NEW, CHANNELS),
-                                                img_dir = TRAIN_DIR)
+                                                img_dir = TRAIN_DIR,
+                                                augmentations=AUGMENTATIONS_TEST)
 
         TRAIN_STEPS = int(len(data_generator_train))
         VALID_STEPS = int(len(data_generator_val))
@@ -240,6 +268,9 @@ if __name__ == '__main__':
                             steps_per_epoch = TRAIN_STEPS,
                             validation_steps = VALID_STEPS,
                             epochs = 1,
+                            workers = 4,
+                            use_multiprocessing = False,
+                            shuffle = True,
                             callbacks = [ModelCheckpointFull(RUN_NAME + 'model_' + str(epoch) + '.h5')],
                             verbose = 1)
 
@@ -257,8 +288,8 @@ if __name__ == '__main__':
         del data_generator_train, data_generator_val, train_idx, valid_idx
         gc.collect()
 
-    # Plot Training Summaries
-    plot_summaries(history, PLOT_NAME1, PLOT_NAME2)
+        # Plot Training Summaries
+        plot_summaries(history, PLOT_NAME1, PLOT_NAME2)
 
     # Create Predictions
     row_ids, targets = [], []
