@@ -209,6 +209,7 @@ if __name__ == '__main__':
 
     # Multi Label Stratified Split stuff...
     msss = MultilabelStratifiedShuffleSplit(n_splits = FOLD, test_size = TEST_SIZE, random_state = SEED)
+    # msss.get_n_splits(X, y)
 
     # CustomReduceLRonPlateau function
     best_val_loss = np.Inf
@@ -230,7 +231,9 @@ if __name__ == '__main__':
     mess = list(msss.split(X_train, Y_train))[FOLD-1]
 
     # Epoch Training Loop
-    for epoch, train_idx, valid_idx in enumerate(zip(*mess)):
+    for epoch, _ in enumerate(mess):
+        train_idx = _[0]
+        valid_idx = _[1]
         print('=========== EPOCH {}'.format(epoch))
 
         # Get train and test index, shuffle train indexes.
