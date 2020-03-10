@@ -227,7 +227,7 @@ if __name__ == '__main__':
     AUGMENTATIONS_TEST = Compose([
     ])
 
-    mess = list(msss.split(X_train, Y_train))[FOLD]
+    mess = list(msss.split(X_train, Y_train))[FOLD-1]
 
     # Epoch Training Loop
     for epoch, train_idx, valid_idx in enumerate(zip(*mess)):
