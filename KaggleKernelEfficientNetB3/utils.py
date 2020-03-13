@@ -32,3 +32,5 @@ def plot_summaries(history, plot_name1, plot_name2):
                 loc='lower right')
     ax.grid()
     fig.savefig(plot_name2)
+    plt.close('all')
+
