@@ -47,11 +47,12 @@ RUN_NAME = 'Train1_'
 PLOT_NAME1 = 'Train1_LossAndAccuracy.png'
 PLOT_NAME2 = 'Train1_Recall.png'
 
-BATCH_SIZE = 56
+BATCH_SIZE = 80
 CHANNELS = 3
 EPOCHS = 80
 TEST_SIZE = 1./6
-FOLD = 6
+TOTAL_FOLD = 6
+CURRENT_FOLD = 4
 
 # Generate Image (Has to be done only one time .. or again when changing SCALE_FACTOR)
 GENERATE_IMAGES = False
@@ -198,8 +199,8 @@ if __name__ == '__main__':
                             'vowel': 'categorical_crossentropy',
                             'consonant': 'categorical_crossentropy'},
                     loss_weights = {'root': 0.50,
-                                    'vowel': 0.25,
-                                    'consonant': 0.25},
+                                    'vowel': 0.30,
+                                    'consonant': 0.30},
                     metrics = {'root': ['accuracy', tf.keras.metrics.Recall()],
                                 'vowel': ['accuracy', tf.keras.metrics.Recall()],
                                 'consonant': ['accuracy', tf.keras.metrics.Recall()] })
@@ -208,7 +209,7 @@ if __name__ == '__main__':
     print(model.summary())
 
     # Multi Label Stratified Split stuff...
-    msss = MultilabelStratifiedShuffleSplit(n_splits = FOLD, test_size = TEST_SIZE, random_state = SEED)
+    msss = MultilabelStratifiedShuffleSplit(n_splits = TOTAL_FOLD, test_size = TEST_SIZE, random_state = SEED)
     # msss.get_n_splits(X, y)
 
     # CustomReduceLRonPlateau function
@@ -222,8 +223,8 @@ if __name__ == '__main__':
 
     AUGMENTATIONS_TRAIN = Compose([
         ShiftScaleRotate(
-            shift_limit=0.02, scale_limit=(0.99, 1.0),
-            rotate_limit=2, interpolation=cv2.INTER_AREA, border_mode=cv2.BORDER_CONSTANT, p=0.8),
+            shift_limit=0.0625, scale_limit=(0.90, 1.0),
+            rotate_limit=5, interpolation=cv2.INTER_AREA, border_mode=cv2.BORDER_CONSTANT, p=0.8),
     ])
     AUGMENTATIONS_TEST = Compose([
     ])
@@ -232,7 +233,7 @@ if __name__ == '__main__':
     for epoch in range(EPOCHS):
         print('=========== EPOCH {}'.format(epoch))
 
-        mess = list(msss.split(X_train, Y_train))[FOLD - 1]
+        mess = list(msss.split(X_train, Y_train))[CURRENT_FOLD]
         print(mess)
         train_idx = mess[0]
         valid_idx = mess[1]
