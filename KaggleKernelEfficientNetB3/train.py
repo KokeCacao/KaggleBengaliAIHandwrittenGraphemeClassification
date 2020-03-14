@@ -47,7 +47,7 @@ RUN_NAME = 'Train1_'
 PLOT_NAME1 = 'Train1_LossAndAccuracy.png'
 PLOT_NAME2 = 'Train1_Recall.png'
 
-BATCH_SIZE = 80
+BATCH_SIZE = 86
 CHANNELS = 3
 EPOCHS = 80
 TEST_SIZE = 1./6
@@ -229,14 +229,14 @@ if __name__ == '__main__':
     AUGMENTATIONS_TEST = Compose([
     ])
 
+    mess = list(msss.split(X_train, Y_train))[CURRENT_FOLD]
+    print(mess)
     # Epoch Training Loop
     for epoch in range(EPOCHS):
         print('=========== EPOCH {}'.format(epoch))
 
-        mess = list(msss.split(X_train, Y_train))[CURRENT_FOLD]
-        print(mess)
-        train_idx = mess[0]
-        valid_idx = mess[1]
+        train_idx = mess[0].copy()
+        valid_idx = mess[1].copy()
 
         # Get train and test index, shuffle train indexes.
         np.random.shuffle(train_idx)
