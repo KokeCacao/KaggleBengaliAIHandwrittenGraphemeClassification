@@ -47,7 +47,7 @@ RUN_NAME = 'Train1_'
 PLOT_NAME1 = 'Train1_LossAndAccuracy.png'
 PLOT_NAME2 = 'Train1_Recall.png'
 
-BATCH_SIZE = 86
+BATCH_SIZE = 98
 CHANNELS = 3
 EPOCHS = 80
 TEST_SIZE = 1./6
@@ -133,7 +133,7 @@ def CustomReduceLRonPlateau(model, history, epoch):
     monitor = 'val_root_loss'
     patience = 5
     factor = 0.75
-    min_lr = 1e-5
+    min_lr = 1e-5*1.75
 
     # Get Current LR
     current_lr = float(K.get_value(model.optimizer.lr))
@@ -194,7 +194,7 @@ if __name__ == '__main__':
     model = create_model(input_shape = (HEIGHT_NEW, WIDTH_NEW, CHANNELS))
 
     # Compile Model
-    model.compile(optimizer = Adam(lr = 0.00016),
+    model.compile(optimizer = Adam(lr = 0.00016*1.75),
                     loss = {'root': 'categorical_crossentropy',
                             'vowel': 'categorical_crossentropy',
                             'consonant': 'categorical_crossentropy'},
