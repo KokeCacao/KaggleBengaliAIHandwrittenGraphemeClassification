@@ -219,7 +219,7 @@ if __name__ == '__main__':
     history = {}
 
     ## added by Koke_Cacao
-    model.load_weights("/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/experiment_2/Train1_model_7.h5")
+    # model.load_weights("/home/k1412042720/KaggleBengaliAIHandwrittenGraphemeClassification/KaggleKernelEfficientNetB3/experiment_2/Train1_model_7.h5")
 
     AUGMENTATIONS_TRAIN = Compose([
         ShiftScaleRotate(
